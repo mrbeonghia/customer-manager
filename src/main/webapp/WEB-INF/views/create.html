@@ -4,12 +4,15 @@
 <body>
 <h3>Add Customer</h3>
 <p>
-    <a th:href="@{/customer}">
+    <a th:href="@{/customers}">
         Back to customer list
     </a>
 </p>
+<th:block th:if="${message}">
+    <p th:text="${message}"></p>
+</th:block>
 <div id="form">
-    <form action="#" th:action="@{/customer/save}" th:object="${customer}" method="post" novalidate="novalidate">
+    <form action="#" th:action="@{/customers/create}" th:object="${customer}" method="post" novalidate="novalidate">
         <input type="hidden" th:field="*{id}" name="id"/>
         <div>
             <label>Name</label>

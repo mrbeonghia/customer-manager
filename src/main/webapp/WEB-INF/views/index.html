@@ -5,7 +5,7 @@
 <body>
 <h3>Customers</h3>
 <p>
-    <a th:href="@{/customer/create}">
+    <a th:href="@{/customers/create}">
         Add new customer
     </a>
 </p>
@@ -26,9 +26,9 @@
         <td th:text="${row.getName()}"></td>
         <td th:text="${row.getEmail()}"></td>
         <td th:text="${row.getAddress()}"></td>
-        <td><a th:href="@{/customer/{id}/edit(id=${row.getId()})}">edit</a></td>
-        <td><a th:href="@{/customer/{id}/delete(id=${row.getId()})}">delete</a></td>
-        <td><a th:href="@{/customer/{id}/view(id=${row.getId()})}">view</a></td>
+        <td><a th:href="@{/customers/edit/{id}(id=${row.getId()})}">edit</a></td>
+        <td><a th:href="@{/customers/delete/{id}(id=${row.getId()})}">delete</a></td>
+        <td><a th:href="@{/customers/view/{id}(id=${row.getId()})}">view</a></td>
     </tr>
     </tbody>
 </table>

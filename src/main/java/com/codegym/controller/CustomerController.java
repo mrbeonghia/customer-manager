@@ -5,66 +5,76 @@ import com.codegym.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/customer")
+@RequestMapping("customers")
 public class CustomerController {
     @Autowired
     CustomerService customerService;
 
     @GetMapping("")
-    public String listCustomer(Model model){
+    public ModelAndView listCustomer(){
+        ModelAndView modelAndView = new ModelAndView("index");
         List customerList = customerService.findAll();
-        model.addAttribute("customers",customerList);
-        return "/index";
+        modelAndView.addObject("customers",customerList);
+        return modelAndView;
     }
 
     @GetMapping("/create")
-    public String showCreateForm(Model model){
-        model.addAttribute("customer", new Customer());
-        return "/create";
+    public ModelAndView showCreateForm(){
+        ModelAndView modelAndView = new ModelAndView("create");
+        modelAndView.addObject("customer", new Customer());
+        return modelAndView;
     }
-    @PostMapping("/save")
-    public String save(Customer customer){
-        customer.setId((int)(Math.random() * 10000));
-        customerService.save(customer);
-        return "redirect:/customer";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable int id, Model model){
-        model.addAttribute("customer", customerService.findById(id));
-        return "/edit";
-    }
-    @PostMapping("/update")
-    public String update(Customer customer){
-        customerService.update(customer.getId(), customer);
-        return "redirect:/customer";
+    @PostMapping("/create")
+    public ModelAndView save(@ModelAttribute Customer customer){
+        int id = customerService.findAll().size();
+        customer.setId(id);
+        customerService.update(id,customer);
+        ModelAndView modelAndView= new ModelAndView("create");
+        modelAndView.addObject("customer", new Customer());
+        modelAndView.addObject("message", "New customer created successfully");
+        return modelAndView;
     }
 
-    @GetMapping("/{id}/delete")
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable int id, ModelMap modelMap){
+        Customer customer = customerService.findById(id)    ;
+        modelMap.addAttribute("customer", customer);
+        return "edit";
+    }
+    @PostMapping("/edit/{id}")
+    public ModelAndView edit(@PathVariable int id, @ModelAttribute Customer customer){
+        customer.setId(id);
+        customerService.update(id,customer);
+        ModelAndView modelAndView = new ModelAndView("redirect:/customers");
+        modelAndView.addObject("customer", customerService.findById(id));
+        return modelAndView;
+    }
+
+    @GetMapping("delete/{id}")
     public String delete(@PathVariable int id, Model model) {
         model.addAttribute("customer", customerService.findById(id));
-        return "/delete";
+        return "delete";
     }
-    @PostMapping("/delete")
+    @PostMapping("delete")
     public String delete(Customer customer, RedirectAttributes redirect) {
         customerService.remove(customer.getId());
         redirect.addFlashAttribute("success", "Removed customer successfully!");
-        return "redirect:/customer";
+        return "redirect:/customers";
     }
 
-    @GetMapping("/{id}/view")
+    @GetMapping("view/{id}")
     public String view(@PathVariable int id, Model model) {
         model.addAttribute("customer", customerService.findById(id));
-        return "/view";
+        return "view";
     }
 
 }
